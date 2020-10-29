@@ -1,0 +1,53 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="top"
+    tools:context=".DisplayData" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:orientation="vertical" >
+
+       <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:background="#FFFFFF"
+            android:layout_gravity="right">
+
+
+           <ImageView
+                android:id="@+id/ivExport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="right"
+                android:src="@drawable/export_50x" />
+
+<!-- 
+            <ImageView
+                android:id="@+id/imageButtonPie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClickChart"
+                android:src="@drawable/graybtn_pie" />
+ -->
+                
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listviewSubjects"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@android:color/white" />
+
+    </LinearLayout>
+
+</FrameLayout>

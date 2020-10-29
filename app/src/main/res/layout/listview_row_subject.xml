@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayoutRowSubject"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:background="@drawable/border"
+    android:focusable="false">
+
+     
+    <ImageView
+        android:id="@+id/ivSubjectIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/noisebullet_50x"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:clickable="false"
+        android:focusable="false"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tvSubjectLevel0"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="left"
+            android:textColor="#070B8A"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tvSubjectLevel1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="left"
+            android:textColor="#000000"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvSubjectLevel2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="left"
+            android:textColor="#666666"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvSubjectLevel3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="left"
+            android:textColor="#cc510e"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+         >
+
+        <ImageView
+            android:id="@+id/ivPie"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:onClick="onClickPie"
+            android:src="@drawable/piechart_50x" />
+
+        <ImageView
+            android:id="@+id/ivBar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:onClick="onClickBar"
+            android:src="@drawable/barchart_50x" />
+
+        <ImageView
+            android:id="@+id/ivScatter"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:onClick="onClickScatter"
+            android:src="@drawable/scatter_50x" />
+    </LinearLayout>
+                
+    
+
+</LinearLayout>
