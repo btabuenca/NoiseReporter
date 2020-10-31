@@ -19,7 +19,6 @@
 package org.ounl.noisereporter;
 
 import java.util.concurrent.TimeUnit;
-
 import org.ounl.noisereporter.feeback.config.Color;
 import org.ounl.noisereporter.feeback.config.ColorFactory;
 import org.ounl.noisereporter.feeback.config.Constants;

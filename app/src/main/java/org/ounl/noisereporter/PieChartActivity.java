@@ -63,7 +63,7 @@ public class PieChartActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.piechart);
+		setContentView(R.layout.activity_piechart);
 		db = new DatabaseHandler(getApplicationContext());
 		noiseUtils = new NoiseUtils();
 
@@ -236,9 +236,6 @@ public class PieChartActivity extends Activity {
 	}
 
 
-	 
-
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

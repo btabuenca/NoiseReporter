@@ -21,9 +21,7 @@ package org.ounl.noisereporter.feeback;
 import java.io.EOFException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-
 import org.ounl.noisereporter.feeback.commands.ICommands;
-
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -74,11 +72,7 @@ public class RequestManagerAsyncTask extends AsyncTask<ICommands, Void, String> 
 		        osw.close();
 		        
 	        }
-			
-//	        if (Build.VERSION.SDK != null && Build.VERSION.SDK_INT > 13) { 
-//        		connection.setRequestProperty("Connection", "close"); 
-//	        }
-	        
+
 			connection.connect();
 			connection.getResponseCode();
 

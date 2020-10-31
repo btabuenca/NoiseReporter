@@ -2,17 +2,17 @@
  * Copyright (C) 2014 Open University of The Netherlands
  * Author: Bernardo Tabuenca Archilla
  * LearnTracker project 
- * 
+ *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -36,21 +36,6 @@ import org.ounl.noisereporter.database.DatabaseHandler;
 import org.ounl.noisereporter.database.ListViewSubjectsAdapter;
 import org.ounl.noisereporter.database.tables.NoiseSampleDO;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -70,212 +55,198 @@ import android.widget.ListView;
  */
 public class SubjectsActivity extends Activity {
 
-	private ArrayList<HashMap> list;
-	private ListView lview;
-	private Intent intent;
-	private ListViewSubjectsAdapter adapter;
-	private DatabaseHandler db;
-	
-	private static final int SERIES_NR = 2;
-	
+    private ArrayList<HashMap> list;
+    private ListView lview;
+    private Intent intent;
+    private ListViewSubjectsAdapter adapter;
+    private DatabaseHandler db;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.fragment_section_subjects);
-		
-		db = new DatabaseHandler(getApplicationContext());		
-		
+    private static final int SERIES_NR = 2;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_section_subjects);
+
+        db = new DatabaseHandler(getApplicationContext());
+
         final ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true); 
-        
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-		intent = new Intent(this, PieChartActivity.class);
-		lview = (ListView) findViewById(R.id.listviewSubjects);
-		lview.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				intent.putExtra("TAG", (String)view.getTag());
-				
-                Toast.makeText( SubjectsActivity.this,                            
-                		" Position clicked "+position,
+        intent = new Intent(this, PieChartActivity.class);
+        lview = (ListView) findViewById(R.id.listviewSubjects);
+        lview.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                intent.putExtra("TAG", (String) view.getTag());
+
+                Toast.makeText(SubjectsActivity.this,
+                        " Position clicked " + position,
                         Toast.LENGTH_LONG).show();
-				startActivity(intent);
-			}
-		});
+                startActivity(intent);
+            }
+        });
 
-	}
-	
-	
-	@Override	
-	protected void onResume(){
-		super.onResume();
-		
-		// Populate SQLlite list
-		populateSubjectsFromLocal();
+    }
 
-		adapter = new ListViewSubjectsAdapter(this,list);
-		lview.setAdapter(adapter);
-		
-	}
-	
-	
-	
 
-	/**
-	 * Populates list from local database
-	 */
-	private void populateSubjectsFromLocal() {
-		list = new ArrayList<HashMap>();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		List<NoiseSampleDO> lSubjectDb = db.getSessions();
+        // Populate SQLlite list
+        populateSubjectsFromLocal();
 
-		for (NoiseSampleDO t : lSubjectDb) {
+        adapter = new ListViewSubjectsAdapter(this, list);
+        lview.setAdapter(adapter);
 
-			// Records for data
-			HashMap temp = new HashMap<String, String>();
-			temp.put(NoiseSampleDO.KEY_TAG, t.getTag());
-			temp.put(NoiseSampleDO.KEY_COUNT, t.getCount());
-			temp.put(NoiseSampleDO.KEY_MIN, t.getMin());
-			temp.put(NoiseSampleDO.KEY_MAX, t.getMax());
-			temp.put(NoiseSampleDO.KEY_AVG, t.getAvg());
+    }
 
-		
-			list.add(temp);
-		}
-	}
-	
-	
 
-	public void onClickPie(View v){
-		Intent intent = new Intent(this,PieChartActivity.class);
-		intent.putExtra("TAG", "" + (String)v.getTag());
-		startActivity(intent);	
-	}
-	
-	
-	public void onClickBar(View v){
-		
-//		de esta view tendras qu recoger el tag para poder hacer la busqueda en bd
-//		de sTag, dMin, dSte que te hacen alta para el getBarDataset
-//		
-//		
-//		
-//		por alguna razon, no esta mostrando en la lista todos las grabaciones...especialmente las recien hechas
-		
-	      XYMultipleSeriesRenderer renderer = getBarDemoRenderer();
-	      setChartSettings(renderer);
-	      intent = ChartFactory.getBarChartIntent(this, getBarDataset(), renderer, Type.DEFAULT);
-	      startActivity(intent);
-	}
-	
-	public void onClickScatter(View v){
-	      intent = ChartFactory.getScatterChartIntent(this, getDemoDataset(), getDemoRenderer());
-	      startActivity(intent);		
-	}
-	
-	
-	  private XYMultipleSeriesDataset getDemoDataset() {
-		    XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-		    final int nr = 10;
-		    Random r = new Random();
-		    for (int i = 0; i < SERIES_NR; i++) {
-		      XYSeries series = new XYSeries("Demo series " + (i + 1));
-		      for (int k = 0; k < nr; k++) {
-		        series.add(k, 20 + r.nextInt() % 100);
-		      }
-		      dataset.addSeries(series);
-		    }
-		    return dataset;
-		  }	
-	  
-	  private XYMultipleSeriesRenderer getDemoRenderer() {
-		    XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		    renderer.setAxisTitleTextSize(16);
-		    renderer.setChartTitleTextSize(20);
-		    renderer.setLabelsTextSize(15);
-		    renderer.setLegendTextSize(15);
-		    renderer.setPointSize(5f);
-		    renderer.setMargins(new int[] {20, 30, 15, 0});
-		    XYSeriesRenderer r = new XYSeriesRenderer();
-		    r.setColor(Color.BLUE);
-		    r.setPointStyle(PointStyle.SQUARE);
-		    r.setFillBelowLine(true);
-		    r.setFillBelowLineColor(Color.WHITE);
-		    r.setFillPoints(true);
-		    renderer.addSeriesRenderer(r);
-		    r = new XYSeriesRenderer();
-		    r.setPointStyle(PointStyle.CIRCLE);
-		    r.setColor(Color.GREEN);
-		    r.setFillPoints(true);
-		    renderer.addSeriesRenderer(r);
-		    renderer.setAxesColor(Color.DKGRAY);
-		    renderer.setLabelsColor(Color.LTGRAY);
-		    return renderer;
-		  }	  
+    /**
+     * Populates list from local database
+     */
+    private void populateSubjectsFromLocal() {
+        list = new ArrayList<HashMap>();
 
-	
-	
-	  private XYMultipleSeriesDataset getBarDataset() {
-		    XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-		    
-		    //db.getSalat(sTag, dMin, dStep)
-		    
-		    
-		    final int nr = 10;
-		    Random r = new Random();
-		    for (int i = 0; i < SERIES_NR; i++) {
-		      CategorySeries series = new CategorySeries("Noise ranking" + (i + 1));
-		      for (int k = 0; k < nr; k++) {
-		        series.add(100 + r.nextInt() % 100);
-		      }
-		      dataset.addSeries(series.toXYSeries());
-		    }
-		    return dataset;
-		  }	
-	  
-	  
-	  
-	
-	  public XYMultipleSeriesRenderer getBarDemoRenderer() {
-		    XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		    renderer.setAxisTitleTextSize(16);
-		    renderer.setChartTitleTextSize(20);
-		    renderer.setLabelsTextSize(15);
-		    renderer.setLegendTextSize(15);
-		    renderer.setMargins(new int[] {20, 30, 15, 0});
-		    SimpleSeriesRenderer r = new SimpleSeriesRenderer();
-		    r.setColor(Color.BLUE);
-		    renderer.addSeriesRenderer(r);
-		    r = new SimpleSeriesRenderer();
-		    r.setColor(Color.GREEN);
-		    renderer.addSeriesRenderer(r);
-		    return renderer;
-		  }	
-	
-	
-	  private void setChartSettings(XYMultipleSeriesRenderer renderer) {
-		    renderer.setChartTitle("Chart demo");
-		    renderer.setXTitle("x values");
-		    renderer.setYTitle("y values");
-		    renderer.setXAxisMin(0.5);
-		    renderer.setXAxisMax(10.5);
-		    renderer.setYAxisMin(0);
-		    renderer.setYAxisMax(210);
-		  }	
-	
-	
-	/**
-	 * Export query from sqlite to csv and send by email
-	 * OR
-	 * WS request to insert data on server
-	 */
-	private void toCSV(){
-		// http://stackoverflow.com/questions/14509026/export-sqlite-into-csv		
-	}
+        List<NoiseSampleDO> lSubjectDb = db.getSessions();
 
-	
+        for (NoiseSampleDO t : lSubjectDb) {
+
+            // Records for data
+            HashMap temp = new HashMap<String, String>();
+            temp.put(NoiseSampleDO.KEY_TAG, t.getTag());
+            temp.put(NoiseSampleDO.KEY_COUNT, t.getCount());
+            temp.put(NoiseSampleDO.KEY_MIN, t.getMin());
+            temp.put(NoiseSampleDO.KEY_MAX, t.getMax());
+            temp.put(NoiseSampleDO.KEY_AVG, t.getAvg());
+
+
+            list.add(temp);
+        }
+    }
+
+
+    public void onClickPie(View v) {
+        Intent intent = new Intent(this, PieChartActivity.class);
+        intent.putExtra("TAG", "" + (String) v.getTag());
+        startActivity(intent);
+    }
+
+
+    public void onClickBar(View v) {
+       XYMultipleSeriesRenderer renderer = getBarDemoRenderer();
+        setChartSettings(renderer);
+        intent = ChartFactory.getBarChartIntent(this, getBarDataset(), renderer, Type.DEFAULT);
+        startActivity(intent);
+    }
+
+    public void onClickScatter(View v) {
+        intent = ChartFactory.getScatterChartIntent(this, getDemoDataset(), getDemoRenderer());
+        startActivity(intent);
+    }
+
+
+    private XYMultipleSeriesDataset getDemoDataset() {
+        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
+        final int nr = 10;
+        Random r = new Random();
+        for (int i = 0; i < SERIES_NR; i++) {
+            XYSeries series = new XYSeries("Demo series " + (i + 1));
+            for (int k = 0; k < nr; k++) {
+                series.add(k, 20 + r.nextInt() % 100);
+            }
+            dataset.addSeries(series);
+        }
+        return dataset;
+    }
+
+    private XYMultipleSeriesRenderer getDemoRenderer() {
+        XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
+        renderer.setAxisTitleTextSize(16);
+        renderer.setChartTitleTextSize(20);
+        renderer.setLabelsTextSize(15);
+        renderer.setLegendTextSize(15);
+        renderer.setPointSize(5f);
+        renderer.setMargins(new int[]{20, 30, 15, 0});
+        XYSeriesRenderer r = new XYSeriesRenderer();
+        r.setColor(Color.BLUE);
+        r.setPointStyle(PointStyle.SQUARE);
+        r.setFillBelowLine(true);
+        r.setFillBelowLineColor(Color.WHITE);
+        r.setFillPoints(true);
+        renderer.addSeriesRenderer(r);
+        r = new XYSeriesRenderer();
+        r.setPointStyle(PointStyle.CIRCLE);
+        r.setColor(Color.GREEN);
+        r.setFillPoints(true);
+        renderer.addSeriesRenderer(r);
+        renderer.setAxesColor(Color.DKGRAY);
+        renderer.setLabelsColor(Color.LTGRAY);
+        return renderer;
+    }
+
+
+    private XYMultipleSeriesDataset getBarDataset() {
+        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
+
+        //db.getSalat(sTag, dMin, dStep)
+
+
+        final int nr = 10;
+        Random r = new Random();
+        for (int i = 0; i < SERIES_NR; i++) {
+            CategorySeries series = new CategorySeries("Noise ranking" + (i + 1));
+            for (int k = 0; k < nr; k++) {
+                series.add(100 + r.nextInt() % 100);
+            }
+            dataset.addSeries(series.toXYSeries());
+        }
+        return dataset;
+    }
+
+
+    public XYMultipleSeriesRenderer getBarDemoRenderer() {
+        XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
+        renderer.setAxisTitleTextSize(16);
+        renderer.setChartTitleTextSize(20);
+        renderer.setLabelsTextSize(15);
+        renderer.setLegendTextSize(15);
+        renderer.setMargins(new int[]{20, 30, 15, 0});
+        SimpleSeriesRenderer r = new SimpleSeriesRenderer();
+        r.setColor(Color.BLUE);
+        renderer.addSeriesRenderer(r);
+        r = new SimpleSeriesRenderer();
+        r.setColor(Color.GREEN);
+        renderer.addSeriesRenderer(r);
+        return renderer;
+    }
+
+
+    private void setChartSettings(XYMultipleSeriesRenderer renderer) {
+        renderer.setChartTitle("Chart demo");
+        renderer.setXTitle("x values");
+        renderer.setYTitle("y values");
+        renderer.setXAxisMin(0.5);
+        renderer.setXAxisMax(10.5);
+        renderer.setYAxisMin(0);
+        renderer.setYAxisMax(210);
+    }
+
+
+    /**
+     * Export query from sqlite to csv and send by email
+     * OR
+     * WS request to insert data on server
+     */
+    private void toCSV() {
+        // http://stackoverflow.com/questions/14509026/export-sqlite-into-csv
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -300,8 +271,7 @@ public class SubjectsActivity extends Activity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }	
-	
-	
+    }
+
 
 }
