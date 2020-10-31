@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.db.tables;
+package org.ounl.noisereporter.database.tables;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class NoiseSampleDb{
+public class NoiseSampleTable {
 	
 	public static final String TABLE_NAME = "noisesample";
 	
@@ -37,9 +37,9 @@ public class NoiseSampleDb{
 	
 	
 	
-	public NoiseSampleDb(long lTimestamp, double dDecibels,
-			double dDecibelsavg, double dDecibelsminthreshold,
-			double dDecibelsmaxthreshold, String sTag) {
+	public NoiseSampleTable(long lTimestamp, double dDecibels,
+							double dDecibelsavg, double dDecibelsminthreshold,
+							double dDecibelsmaxthreshold, String sTag) {
 		super();
 		this.lTimestamp = lTimestamp;
 		this.dDecibels = dDecibels;
@@ -49,7 +49,7 @@ public class NoiseSampleDb{
 	}
 
 	
-	public NoiseSampleDb(Cursor c) {
+	public NoiseSampleTable(Cursor c) {
 
 		this.lTimestamp = c.getInt(0);
 		this.dDecibels = c.getDouble(1);
@@ -79,12 +79,6 @@ public class NoiseSampleDb{
 		 cv.put(KEY_DECIBELS, getdDecibels());
 		 cv.put(KEY_DECIBELSAVG, getdDecibelsavg());
 		 cv.put(KEY_TAG, getsTag());
-		 
-		 
-//		 cv.put(KEY_DECIBELSMINTHRESHOLD, getdDecibasdfaelsavg());
-//		 cv.put(KEY_DECIBELSMAXTHRESHOLD, getdDecibelasdfassavg());
-//		 
-;
 		 			
 	}
 

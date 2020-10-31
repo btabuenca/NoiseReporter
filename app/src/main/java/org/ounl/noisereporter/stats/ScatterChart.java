@@ -1,5 +1,5 @@
 
-package org.ounl.noisereporter.chart;
+package org.ounl.noisereporter.stats;
 
 import java.util.ArrayList;
 import java.util.List;

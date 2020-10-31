@@ -16,27 +16,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.fcube.config;
+package org.ounl.noisereporter.feeback;
 
 import java.io.EOFException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 
-import org.ounl.noisereporter.fcube.commands.IFeedbackCubeCommnads;
+import org.ounl.noisereporter.feeback.commands.ICommands;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class FeedbackCubeManager extends AsyncTask<IFeedbackCubeCommnads, Void, String> {
+public class RequestManagerAsyncTask extends AsyncTask<ICommands, Void, String> {
 	
 	private String CLASSNAME = this.getClass().getName(); 
 
 	@Override
-	protected String doInBackground(IFeedbackCubeCommnads... params) {
+	protected String doInBackground(ICommands... params) {
 
 
 		try {
-			IFeedbackCubeCommnads Ifcc = params[0];
+			ICommands Ifcc = params[0];
 			Log.d(CLASSNAME, "Lunch command "+Ifcc.toString());
 			run(Ifcc);
 			Log.d(CLASSNAME, "Command launched! "+Ifcc.toString());
@@ -51,7 +51,7 @@ public class FeedbackCubeManager extends AsyncTask<IFeedbackCubeCommnads, Void, 
 	}
 
 	
-	private void run(IFeedbackCubeCommnads cmd) {
+	private void run(ICommands cmd) {
 		
 		HttpURLConnection connection = null;
 

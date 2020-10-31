@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.fcube.commands;
+package org.ounl.noisereporter.feeback.commands;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.ounl.noisereporter.fcube.config.FeedbackCubeConfig;
+import org.ounl.noisereporter.feeback.config.ConfigManager;
 
-public class FCColor implements IFeedbackCubeCommnads{
+public class ColorCommand implements ICommands {
 	/**
 	 * * > PUT /ring/color/ HTTP/1.1           : Changes the color of the LED strip
 	 */
@@ -34,7 +34,7 @@ public class FCColor implements IFeedbackCubeCommnads{
 	private String sColorBlue_DECIMAL = "0";
 	
 	
-	public FCColor(String sIp, String sRedDecimal, String sGreenDecimal, String sBlueDecimal){
+	public ColorCommand(String sIp, String sRedDecimal, String sGreenDecimal, String sBlueDecimal){
 		ipAdress = sIp;
 		
 		sColorRed_DECIMAL = sRedDecimal;
@@ -44,7 +44,7 @@ public class FCColor implements IFeedbackCubeCommnads{
 	
 	private String getCommand(){		
 		
-		return FeedbackCubeConfig.URL_PREFIX + ipAdress + WS_PATH; 
+		return ConfigManager.URL_PREFIX + ipAdress + WS_PATH;
 	}
 	
 	
@@ -83,7 +83,7 @@ public class FCColor implements IFeedbackCubeCommnads{
 
 	@Override
 	public String getHttpMethod() {		
-		return IFeedbackCubeCommnads.HTTP_METHOD_PUT;
+		return ICommands.HTTP_METHOD_PUT;
 	}
 	
 	@Override

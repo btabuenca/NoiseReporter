@@ -1,4 +1,4 @@
-package org.ounl.noisereporter.chart;
+package org.ounl.noisereporter.stats;
 
 import java.util.Date;
 import java.util.List;

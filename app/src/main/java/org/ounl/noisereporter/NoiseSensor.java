@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import android.media.MediaRecorder;
 
-public class Detect_noise {
+public class NoiseSensor {
 	    // This file is used to record voice
         static final private double EMA_FILTER = 0.6;
 

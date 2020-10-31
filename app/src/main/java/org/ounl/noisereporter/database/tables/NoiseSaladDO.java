@@ -16,10 +16,48 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.db.tables;
+package org.ounl.noisereporter.database.tables;
 
-public interface ITables {
+import android.database.Cursor;
 
-	// public void loadContentValues(ContentValues cv);
+/**
+ * @author BTB
+ *
+ */
+public class NoiseSaladDO {
+	
+	public static final String KEY_INGREDIENT = "ingredient";
+	public static final String KEY_COUNT= "count";	
+	
+	public String ingredient;
+	public long count;
+	
+	
+	public NoiseSaladDO(String ingredient, long count) {
+		super();
+		this.ingredient = ingredient;
+		this.count = count;
+	}
+	
+	public NoiseSaladDO(Cursor c) {
+
+		this.ingredient = c.getString(1);
+		this.count = c.getLong(2);
+
+	}
+
+
+	public String getIngredient() {
+		return ingredient;
+	}
+	public void setIngredient(String ing) {
+		this.ingredient = ing;
+	}
+	public long getCount() {
+		return count;
+	}
+	public void setCount(long count) {
+		this.count = count;
+	}
 
 }

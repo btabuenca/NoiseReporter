@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.db.tables;
+package org.ounl.noisereporter.database.tables;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class TagDb{
+public class TagTable {
 	
 	public static final String TABLE_NAME = "tag";
 	
@@ -34,8 +34,8 @@ public class TagDb{
 	private double dDecibelsmaxthreshold;	
 	
 	
-	public TagDb(String sTag, double dDecibelsminthreshold,
-			double dDecibelsmaxthreshold) {
+	public TagTable(String sTag, double dDecibelsminthreshold,
+					double dDecibelsmaxthreshold) {
 		super();
 		this.dDecibelsminthreshold = dDecibelsminthreshold;
 		this.dDecibelsmaxthreshold = dDecibelsmaxthreshold;		
@@ -43,7 +43,7 @@ public class TagDb{
 	}
 
 	
-	public TagDb(Cursor c) {
+	public TagTable(Cursor c) {
 		this.sTag = c.getString(0);
 		this.dDecibelsminthreshold = c.getDouble(1);
 		this.dDecibelsmaxthreshold = c.getDouble(2);

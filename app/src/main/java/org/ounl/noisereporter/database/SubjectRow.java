@@ -1,5 +1,5 @@
 /*******************************************************************************
-  * Copyright (C) 2014 Open University of The Netherlands
+ * Copyright (C) 2014 Open University of The Netherlands
  * Author: Bernardo Tabuenca Archilla
  * LearnTracker project 
  * 
@@ -16,17 +16,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.fcube;
+package org.ounl.noisereporter.database;
+
+import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
- * @author Bernardo Tabuenca
- * 
+ * @author BTB
+ *
  */
-public class Constants {
-
-
-	public final static int NOISE_LEVEL_INIT = -1;
-
+public  class SubjectRow {
+	public SubjectRow() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
-
+	
+	String sIdSubject;
+	ImageView ivBullet;
+	TextView tvField0;
+	TextView tvField1;
+	TextView tvField2;
+	TextView tvField3;
+	
+	ImageView ivPie;
+	ImageView ivBar;
+	ImageView ivScat;
 }

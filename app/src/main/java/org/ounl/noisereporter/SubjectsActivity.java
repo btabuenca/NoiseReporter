@@ -32,10 +32,9 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
-import org.ounl.noisereporter.chart.PieChartActivity;
-import org.ounl.noisereporter.db.DatabaseHandler;
-import org.ounl.noisereporter.db.ListViewSubjectsAdapter;
-import org.ounl.noisereporter.db.tables.NoiseSamplePJ;
+import org.ounl.noisereporter.database.DatabaseHandler;
+import org.ounl.noisereporter.database.ListViewSubjectsAdapter;
+import org.ounl.noisereporter.database.tables.NoiseSampleDO;
 
 
 
@@ -130,17 +129,17 @@ public class SubjectsActivity extends Activity {
 	private void populateSubjectsFromLocal() {
 		list = new ArrayList<HashMap>();
 
-		List<NoiseSamplePJ> lSubjectDb = db.getSessions();
+		List<NoiseSampleDO> lSubjectDb = db.getSessions();
 
-		for (NoiseSamplePJ t : lSubjectDb) {
+		for (NoiseSampleDO t : lSubjectDb) {
 
 			// Records for data
 			HashMap temp = new HashMap<String, String>();
-			temp.put(NoiseSamplePJ.KEY_TAG, t.getTag());
-			temp.put(NoiseSamplePJ.KEY_COUNT, t.getCount());
-			temp.put(NoiseSamplePJ.KEY_MIN, t.getMin());
-			temp.put(NoiseSamplePJ.KEY_MAX, t.getMax());
-			temp.put(NoiseSamplePJ.KEY_AVG, t.getAvg());
+			temp.put(NoiseSampleDO.KEY_TAG, t.getTag());
+			temp.put(NoiseSampleDO.KEY_COUNT, t.getCount());
+			temp.put(NoiseSampleDO.KEY_MIN, t.getMin());
+			temp.put(NoiseSampleDO.KEY_MAX, t.getMax());
+			temp.put(NoiseSampleDO.KEY_AVG, t.getAvg());
 
 		
 			list.add(temp);

@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.db.tables;
+package org.ounl.noisereporter.database.tables;
 
 /**
  * @author BTB
  *
  */
-public class NoiseSamplePJ {
+public class NoiseSampleDO {
 	
 	public static final String KEY_TAG = "tag";
 	public static final String KEY_COUNT= "count";	
@@ -31,7 +31,7 @@ public class NoiseSamplePJ {
 	public static final String KEY_AVG = "avg";
 	
 	
-	public NoiseSamplePJ(String tag, long count, long min, long max, double avg) {
+	public NoiseSampleDO(String tag, long count, long min, long max, double avg) {
 		super();
 		this.tag = tag;
 		this.count = count;

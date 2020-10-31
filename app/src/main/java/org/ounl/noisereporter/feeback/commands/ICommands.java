@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2014 Open University of The Netherlands
  * Author: Bernardo Tabuenca Archilla
- * LearnTracker project 
+ * Lifelong Learning Hub project 
  * 
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,48 +16,31 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.db.tables;
+package org.ounl.noisereporter.feeback.commands;
 
-import android.database.Cursor;
+import java.net.URL;
 
-/**
- * @author BTB
- *
- */
-public class MinStepPJ {
+public interface ICommands {
 	
-	public static final String KEY_MINDECIBELS = "min";
-	public static final String KEY_STEPDECIBELS= "dec";	
-	
-	public double minDecibels;
-	public double stepDecibels;
-	
-	
-	public MinStepPJ(double ingredient, double count) {
-		super();
-		this.minDecibels = ingredient;
-		this.stepDecibels = count;
-	}
-	
-	public MinStepPJ(Cursor c) {
+	public static final String HTTP_METHOD_PUT = "PUT";
 
-		this.minDecibels = c.getDouble(0);
-		this.stepDecibels = c.getDouble(2);
+	public static final String ACTION_COLOR = "ACTION_COLOR";
+	public static final String ACTION_OFF = "ACTION_OFF";
+	public static final String ACTION_ON = "ACTION_ON";
 
-	}
+	public URL getUrlCommand();
 
+	public String toString();
+	
+	public boolean hasParams();
+	
+	public String getParams();
 
-	public double getMinDecibels() {
-		return minDecibels;
-	}
-	public void setMinDecibels(double ing) {
-		this.minDecibels = ing;
-	}
-	public double getStepDecibels() {
-		return stepDecibels;
-	}
-	public void setSteDecibels(double count) {
-		this.stepDecibels = count;
-	}
+	public String getHttpMethod();
+
+	public String getWSPath();
+
+	public String getAction();
+	
 
 }

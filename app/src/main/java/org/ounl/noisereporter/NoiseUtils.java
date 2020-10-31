@@ -20,18 +20,17 @@ package org.ounl.noisereporter;
 
 import java.util.concurrent.TimeUnit;
 
-import org.ounl.noisereporter.feeback.FeedbackColor;
-import org.ounl.noisereporter.feeback.FeedbackColorFactory;
-
-import android.graphics.Color;
+import org.ounl.noisereporter.feeback.config.Color;
+import org.ounl.noisereporter.feeback.config.ColorFactory;
+import org.ounl.noisereporter.feeback.config.Constants;
 
 
 public class NoiseUtils {
 
-	private FeedbackColorFactory fcf = null;
+	private ColorFactory fcf = null;
 	
 	public NoiseUtils(){
-		fcf = new FeedbackColorFactory();
+		fcf = new ColorFactory();
 	}
 	
 	/**
@@ -244,19 +243,19 @@ public class NoiseUtils {
 	 * @param mThresholdMin
 	 * @return
 	 */
-	public FeedbackColor getFeedbackColor(double dAVGBufferNoise, double mThresholdMax, double mThresholdMin){
+	public Color getFeedbackColor(double dAVGBufferNoise, double mThresholdMax, double mThresholdMin){
 		
 		int iPos = 0;
 		if(dAVGBufferNoise > mThresholdMax){
 			// Supera 
-			iPos = FeedbackColorFactory.COLOR_GRADIENT_SIZE -1;
+			iPos = ColorFactory.COLOR_GRADIENT_SIZE -1;
 		}else if(dAVGBufferNoise < mThresholdMin){
 			// Esta por debajo
 			iPos = 0;
 		}else{
 			// Esta en el rango
 			double dRange = mThresholdMax - mThresholdMin;
-			double dStep = dRange / FeedbackColorFactory.COLOR_GRADIENT_SIZE; 
+			double dStep = dRange / ColorFactory.COLOR_GRADIENT_SIZE;
 			double dPos = ((dAVGBufferNoise - mThresholdMin) / dStep);
 			iPos = (int)dPos;
 
@@ -277,7 +276,7 @@ public class NoiseUtils {
 	public String getHexColor(int mLevel){
 		
 		int iPos = 0;
-		double dStep = FeedbackColorFactory.COLOR_GRADIENT_SIZE / Constants.NOISE_LEVELS;
+		double dStep = ColorFactory.COLOR_GRADIENT_SIZE / Constants.NOISE_LEVELS;
 		
 		iPos = (int)dStep * mLevel;
 		

@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter;
-
-import java.text.SimpleDateFormat;
+package org.ounl.noisereporter.feeback.config;
 
 /**
  * @author Bernardo Tabuenca
  *
  */
 public class Constants {
-	
+
+	public final static int NOISE_LEVEL_INIT = -1;
+
 	public static final int NOISE_LEVELS = 7;
 	
 	// Noise headings
@@ -64,8 +64,5 @@ public class Constants {
 	public final static int OPERATION_SUCCESS = 0;
 	public final static int OPERATION_FAILED = 1;
 	
-
-
-
 
 }

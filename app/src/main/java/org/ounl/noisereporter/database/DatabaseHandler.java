@@ -16,17 +16,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.db;
+package org.ounl.noisereporter.database;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ounl.noisereporter.Constants;
-import org.ounl.noisereporter.db.tables.MinStepPJ;
-import org.ounl.noisereporter.db.tables.NoiseSampleDb;
-import org.ounl.noisereporter.db.tables.NoiseSamplePJ;
-import org.ounl.noisereporter.db.tables.NoiseSaladPJ;
-import org.ounl.noisereporter.db.tables.TagDb;
+import org.ounl.noisereporter.feeback.config.Constants;
+import org.ounl.noisereporter.database.tables.MinStepDO;
+import org.ounl.noisereporter.database.tables.NoiseSampleTable;
+import org.ounl.noisereporter.database.tables.NoiseSampleDO;
+import org.ounl.noisereporter.database.tables.NoiseSaladDO;
+import org.ounl.noisereporter.database.tables.TagTable;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -56,18 +56,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		sqliteDB = db;
 
 		Log.d(CLASSNAME, "Creating table NoiseSample ...");
-		db.execSQL(NoiseSampleDb.getCreateTable());
+		db.execSQL(NoiseSampleTable.getCreateTable());
 		
 		Log.d(CLASSNAME, "Creating table Tag ...");
-		db.execSQL(TagDb.getCreateTable());		
+		db.execSQL(TagTable.getCreateTable());
 
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-		db.execSQL("DROP TABLE IF EXISTS " + NoiseSampleDb.TABLE_NAME);
-		db.execSQL("DROP TABLE IF EXISTS " + TagDb.TABLE_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + NoiseSampleTable.TABLE_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + TagTable.TABLE_NAME);
 
 		onCreate(db);
 	}
@@ -81,13 +81,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @param o
 	 */
-	public void addNoiseSample(NoiseSampleDb o) {
+	public void addNoiseSample(NoiseSampleTable o) {
 
 		sqliteDB = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		o.loadContentValues(values);
 		try {
-			sqliteDB.insert(NoiseSampleDb.TABLE_NAME, null, values);
+			sqliteDB.insert(NoiseSampleTable.TABLE_NAME, null, values);
 		} catch (Exception e) {
 			Log.e(CLASSNAME, "Error inserting NoiseSample " + e.toString() + "");
 			e.printStackTrace();
@@ -100,7 +100,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @param NoiseSampless
 	 */
-	public void addNoiseSamples(List<NoiseSampleDb> noiseSamples) {
+	public void addNoiseSamples(List<NoiseSampleTable> noiseSamples) {
 
 		for (int i = 0; i < noiseSamples.size(); i++) {
 			addNoiseSample(noiseSamples.get(i));
@@ -113,14 +113,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @return
 	 */
-	public List<NoiseSampleDb> getNoiseSamples() {
-		List<NoiseSampleDb> list = new ArrayList<NoiseSampleDb>();
-		String selectQuery = "SELECT  * FROM " + NoiseSampleDb.TABLE_NAME;
+	public List<NoiseSampleTable> getNoiseSamples() {
+		List<NoiseSampleTable> list = new ArrayList<NoiseSampleTable>();
+		String selectQuery = "SELECT  * FROM " + NoiseSampleTable.TABLE_NAME;
 		sqliteDB = this.getWritableDatabase();
 		Cursor cursor = sqliteDB.rawQuery(selectQuery, null);
 		if (cursor.moveToFirst()) {
 			do {
-				NoiseSampleDb o = new NoiseSampleDb(cursor);
+				NoiseSampleTable o = new NoiseSampleTable(cursor);
 				list.add(o);
 			} while (cursor.moveToNext());
 		}
@@ -134,16 +134,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @return
 	 */
-	public MinStepPJ getMinStepNoiseSamples(String aTag, int aNumSteps) {
+	public MinStepDO getMinStepNoiseSamples(String aTag, int aNumSteps) {
 		
-		MinStepPJ ms = null;
-		String selectQuery = "SELECT min(decibels), max(decibels), (max(decibels) - min(decibels))/"+aNumSteps+" as step FROM "+ NoiseSampleDb.TABLE_NAME+" WHERE tag ='"+aTag+"'" ;
+		MinStepDO ms = null;
+		String selectQuery = "SELECT min(decibels), max(decibels), (max(decibels) - min(decibels))/"+aNumSteps+" as step FROM "+ NoiseSampleTable.TABLE_NAME+" WHERE tag ='"+aTag+"'" ;
 		System.out.println(selectQuery);
 		
 		sqliteDB = this.getWritableDatabase();
 		Cursor cursor = sqliteDB.rawQuery(selectQuery, null);
 		if (cursor.moveToFirst()) {
-			ms = new MinStepPJ(cursor);
+			ms = new MinStepDO(cursor);
 		}
 		cursor.close();
 		sqliteDB.close();
@@ -155,8 +155,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @return
 	 */
-	public List<NoiseSamplePJ> getSessions() {
-		List<NoiseSamplePJ> list = new ArrayList<NoiseSamplePJ>();
+	public List<NoiseSampleDO> getSessions() {
+		List<NoiseSampleDO> list = new ArrayList<NoiseSampleDO>();
 		String selectQuery = "SELECT tag, count(*), min(timestamp), max(timestamp), avg(decibels) FROM noisesample GROUP BY tag ORDER by timestamp asc";
 		sqliteDB = this.getWritableDatabase();
 		Cursor cursor = sqliteDB.rawQuery(selectQuery, null);
@@ -171,7 +171,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				double dCursorAVG = Double.parseDouble(cursor.getString(4));
 				
 				
-				NoiseSamplePJ o = new NoiseSamplePJ(sCursorTag, lCursorCOUNT, lCursorMIN, lCursorMAX, dCursorAVG);
+				NoiseSampleDO o = new NoiseSampleDO(sCursorTag, lCursorCOUNT, lCursorMIN, lCursorMAX, dCursorAVG);
 				list.add(o);
 			} while (cursor.moveToNext());
 		}
@@ -190,13 +190,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @param o
 	 */
-	public void addTag(TagDb o) {
+	public void addTag(TagTable o) {
 
 		sqliteDB = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		o.loadContentValues(values);
 		try {
-			sqliteDB.insert(TagDb.TABLE_NAME, null, values);
+			sqliteDB.insert(TagTable.TABLE_NAME, null, values);
 		} catch (Exception e) {
 			Log.e(CLASSNAME, "Error inserting Tag " + e.toString() + "");
 			e.printStackTrace();
@@ -209,7 +209,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @param Tagss
 	 */
-	public void addTags(List<TagDb> tags) {
+	public void addTags(List<TagTable> tags) {
 
 		for (int i = 0; i < tags.size(); i++) {
 			addTag(tags.get(i));
@@ -222,14 +222,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @return
 	 */
-	public List<TagDb> getTags() {
-		List<TagDb> list = new ArrayList<TagDb>();
-		String selectQuery = "SELECT  * FROM " + TagDb.TABLE_NAME;
+	public List<TagTable> getTags() {
+		List<TagTable> list = new ArrayList<TagTable>();
+		String selectQuery = "SELECT  * FROM " + TagTable.TABLE_NAME;
 		sqliteDB = this.getWritableDatabase();
 		Cursor cursor = sqliteDB.rawQuery(selectQuery, null);
 		if (cursor.moveToFirst()) {
 			do {
-				TagDb o = new TagDb(cursor);
+				TagTable o = new TagTable(cursor);
 				list.add(o);
 			} while (cursor.moveToNext());
 		}
@@ -244,12 +244,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @return
 	 */
-	public TagDb getTag(String sTag) {
-		List<TagDb> list = new ArrayList<TagDb>();
-		String selectQuery = "SELECT  * FROM " + TagDb.TABLE_NAME + " WHERE "+TagDb.KEY_TAG+"='"+sTag+"'";
+	public TagTable getTag(String sTag) {
+		List<TagTable> list = new ArrayList<TagTable>();
+		String selectQuery = "SELECT  * FROM " + TagTable.TABLE_NAME + " WHERE "+ TagTable.KEY_TAG+"='"+sTag+"'";
 		sqliteDB = this.getWritableDatabase();
 		Cursor cursor = sqliteDB.rawQuery(selectQuery, null);
-		TagDb o = new TagDb(cursor);
+		TagTable o = new TagTable(cursor);
 		if (cursor.moveToFirst()) {				
 				list.add(o);
 		}
@@ -267,9 +267,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @return
 	 */
-	public List<NoiseSaladPJ> getSalat(String sTag, double dMin, double dStep) {
+	public List<NoiseSaladDO> getSalat(String sTag, double dMin, double dStep) {
 		
-		List<NoiseSaladPJ> list = new ArrayList<NoiseSaladPJ>();
+		List<NoiseSaladDO> list = new ArrayList<NoiseSaladDO>();
 		String selectQuery = " ";
 		selectQuery += " SELECT '1', '"+Constants.ICON_LEVEL_1+"', count(*) ";
 		selectQuery += " FROM noisesample ";
@@ -327,7 +327,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = sqliteDB.rawQuery(selectQuery, null);
 		if (cursor.moveToFirst()) {
 			do {
-				NoiseSaladPJ o = new NoiseSaladPJ(cursor);
+				NoiseSaladDO o = new NoiseSaladDO(cursor);
 				list.add(o);
 			} while (cursor.moveToNext());
 		}

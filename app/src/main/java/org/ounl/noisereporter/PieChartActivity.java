@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.chart;
+package org.ounl.noisereporter;
 
 import java.util.List;
 
@@ -26,19 +26,15 @@ import org.achartengine.model.CategorySeries;
 import org.achartengine.model.SeriesSelection;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
-import org.ounl.noisereporter.Constants;
-import org.ounl.noisereporter.NoiseUtils;
-import org.ounl.noisereporter.R;
-import org.ounl.noisereporter.SubjectsActivity;
-import org.ounl.noisereporter.db.DatabaseHandler;
-import org.ounl.noisereporter.db.tables.MinStepPJ;
-import org.ounl.noisereporter.db.tables.NoiseSaladPJ;
-import org.ounl.noisereporter.feeback.FeedbackColor;
+import org.ounl.noisereporter.database.DatabaseHandler;
+import org.ounl.noisereporter.database.tables.MinStepDO;
+import org.ounl.noisereporter.database.tables.NoiseSaladDO;
+import org.ounl.noisereporter.feeback.config.Color;
+import org.ounl.noisereporter.feeback.config.Constants;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
@@ -84,11 +80,11 @@ public class PieChartActivity extends Activity {
 
 		renderer.setApplyBackgroundColor(true);
 		// mRenderer.setBackgroundColor(Color.argb(100, 50, 50, 50));
-		renderer.setBackgroundColor(Color.WHITE);
+		renderer.setBackgroundColor(android.graphics.Color.WHITE);
 		// renderer.setChartTitleTextSize(50f);
 		renderer.setChartTitle("Overall distribution of time by assignment");
 		// renderer.setLabelsTextSize(30f);
-		renderer.setLabelsColor(Color.BLACK);
+		renderer.setLabelsColor(android.graphics.Color.BLACK);
 		// renderer.setLegendTextSize(30f);
 		renderer.setMargins(new int[] { 20, 30, 15, 0 });
 		renderer.setZoomButtonsVisible(true);
@@ -96,9 +92,9 @@ public class PieChartActivity extends Activity {
 
 		// Retrieve values from database
 		
-		MinStepPJ ms = db.getMinStepNoiseSamples(mTag, Constants.NOISE_LEVELS);
+		MinStepDO ms = db.getMinStepNoiseSamples(mTag, Constants.NOISE_LEVELS);
 //		Log.d(CLASSNAME,  " Fruit " + NAME_LIST[i] + " / Count " + VALUES[i]);
-		List<NoiseSaladPJ> las = db.getSalat(mTag, ms.getMinDecibels(), ms.getStepDecibels());
+		List<NoiseSaladDO> las = db.getSalat(mTag, ms.getMinDecibels(), ms.getStepDecibels());
 		
 		NAME_LIST = new String[las.size()];
 		VALUES = new double[las.size()];
@@ -111,8 +107,8 @@ public class PieChartActivity extends Activity {
 			mSeries.add(NAME_LIST[i], VALUES[i]);
 			SimpleSeriesRenderer ssr = new SimpleSeriesRenderer();
 			
-			FeedbackColor fbc = noiseUtils.getFeedbackColor(i+1, Constants.NOISE_LEVELS, 1);
-			ssr.setColor(Color.parseColor(fbc.getHexColor()));
+			Color fbc = noiseUtils.getFeedbackColor(i+1, Constants.NOISE_LEVELS, 1);
+			ssr.setColor(android.graphics.Color.parseColor(fbc.getHexColor()));
 			
 			//ssr.setColor(COLORS[(mSeries.getItemCount() - 1) % COLORS.length]);
 			renderer.addSeriesRenderer(ssr);

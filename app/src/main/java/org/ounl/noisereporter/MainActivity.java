@@ -3,21 +3,20 @@ package org.ounl.noisereporter;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.ounl.noisereporter.db.DatabaseHandler;
-import org.ounl.noisereporter.db.tables.NoiseSampleDb;
-import org.ounl.noisereporter.db.tables.TagDb;
-import org.ounl.noisereporter.fcube.Constants;
-import org.ounl.noisereporter.fcube.commands.FCColor;
-import org.ounl.noisereporter.fcube.commands.FCOff;
-import org.ounl.noisereporter.fcube.commands.FCOn;
-import org.ounl.noisereporter.fcube.config.FeedbackCubeConfig;
-import org.ounl.noisereporter.fcube.config.FeedbackCubeManager;
-import org.ounl.noisereporter.feeback.FeedbackColor;
+import org.ounl.noisereporter.database.DatabaseHandler;
+import org.ounl.noisereporter.database.tables.NoiseSampleTable;
+import org.ounl.noisereporter.database.tables.TagTable;
+import org.ounl.noisereporter.feeback.commands.ColorCommand;
+import org.ounl.noisereporter.feeback.commands.OffCommand;
+import org.ounl.noisereporter.feeback.commands.OnCommand;
+import org.ounl.noisereporter.feeback.config.ConfigManager;
+import org.ounl.noisereporter.feeback.config.Constants;
+import org.ounl.noisereporter.feeback.RequestManagerAsyncTask;
+import org.ounl.noisereporter.feeback.config.Color;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -30,7 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class NoiseAlertActivity extends Activity {
+public class MainActivity extends Activity {
 	/* constants */
 
 	/** running state **/
@@ -46,7 +45,7 @@ public class NoiseAlertActivity extends Activity {
 	private TextView mStatusView, tv_noice;
 
 	/* sound data source */
-	private Detect_noise mSensor;
+	private NoiseSensor mSensor;
 	ProgressBar bar;
 	EditText etIP;
 	EditText etTAG;
@@ -65,7 +64,7 @@ public class NoiseAlertActivity extends Activity {
 			String sTag = etTAG.getText().toString();
 			Double dThresMin = new Double(etThresMin.getText().toString());
 			Double dThresMax = new Double(etThresMax.getText().toString());
-			db.addTag(new TagDb(sTag, dThresMin, dThresMax));
+			db.addTag(new TagTable(sTag, dThresMin, dThresMax));
 			
 			// Start recording samples of noise
 			start();
@@ -79,7 +78,7 @@ public class NoiseAlertActivity extends Activity {
 			try {
 				// Read input data
 				String sIp = etIP.getText().toString();
-				FeedbackCubeConfig.getSingleInstance().setIp(sIp);
+				ConfigManager.getSingleInstance().setIp(sIp);
 
 				String sTag = etTAG.getText().toString();
 				
@@ -99,24 +98,24 @@ public class NoiseAlertActivity extends Activity {
 
 					// Add noise item to buffer and return position where it was
 					// inserted
-					int iNum = FeedbackCubeConfig.getSingleInstance()
+					int iNum = ConfigManager.getSingleInstance()
 							.addNoiseItem(amp);
 
 					// Return color for average values in buffer
 					// Commented for calibration
 					readThreshold();
-					FeedbackColor color = FeedbackCubeConfig.getSingleInstance().getBufferColor();
+					Color color = ConfigManager.getSingleInstance().getBufferColor();
 
 					// Send color whenever the cube is activated
 					if(mToggleButton.isChecked()){
 						// Launch color in the cube
-						FCColor fcc = new FCColor(FeedbackCubeConfig
+						ColorCommand fcc = new ColorCommand(ConfigManager
 							.getSingleInstance().getIp(), "" + color.getR(), ""
 							+ color.getG(), "" + color.getB());
-						new FeedbackCubeManager().execute(fcc);
+						new RequestManagerAsyncTask().execute(fcc);
 					}
 					// Prepare log
-					ampAVG = FeedbackCubeConfig.getSingleInstance().getAverageNoise();
+					ampAVG = ConfigManager.getSingleInstance().getAverageNoise();
 					
 					// Show average color in mobile display
 					updateCurrentNoiseAndProgressbar("Monitoring on..." + sIp, amp);
@@ -127,7 +126,7 @@ public class NoiseAlertActivity extends Activity {
 					Double dThresMax = new Double(etThresMax.getText().toString());
 					
 					// Insert noise item into database
-					db.addNoiseSample(new NoiseSampleDb(dNow.getTime(), amp, ampAVG, dThresMin, dThresMax, sTag));
+					db.addNoiseSample(new NoiseSampleTable(dNow.getTime(), amp, ampAVG, dThresMin, dThresMax, sTag));
 					
 					// new Double(etThresMin.getText().toString())
 
@@ -135,16 +134,16 @@ public class NoiseAlertActivity extends Activity {
 					// FeedbackCubeColor color = new FeedbackCubeColor(0,0,0);
 					// callForHelp(ampAVG, amp, color);
 
-					if (iNum == FeedbackCubeConfig.NUM_POLLS) {
+					if (iNum == ConfigManager.NUM_POLLS) {
 
-						FeedbackCubeConfig.getSingleInstance().resetPollIndex();
+						ConfigManager.getSingleInstance().resetPollIndex();
 					}
 
 				}
 
 				// Runnable(mPollTask) will again execute after POLL_INTERVAL
 				mHandler.postDelayed(mPollTask,
-						FeedbackCubeConfig.POLL_INTERVAL);
+						ConfigManager.POLL_INTERVAL);
 
 			} catch (Exception e) {
 				updateCurrentNoiseAndProgressbar("" + e.getMessage(), 0.0);
@@ -158,8 +157,8 @@ public class NoiseAlertActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Defined SoundLevelView in main.xml file
-		setContentView(R.layout.main);
+		// Defined SoundLevelView in activity_main.xml file
+		setContentView(R.layout.activity_main);
 
 		mToggleButton = (ToggleButton) findViewById(R.id.tbFeedback);
 		mStatusView = (TextView) findViewById(R.id.status);
@@ -180,7 +179,7 @@ public class NoiseAlertActivity extends Activity {
 		readThreshold();
 
 		// Used to record voice
-		mSensor = new Detect_noise();
+		mSensor = new NoiseSensor();
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,
 				"NoiseAlertActivity");
@@ -194,11 +193,11 @@ public class NoiseAlertActivity extends Activity {
 		// Configure thresholds
 		// etThresMin = (EditText) findViewById(R.id.etMimThreshold);
 		try {
-			FeedbackCubeConfig.getSingleInstance().setmThresholdMin(
+			ConfigManager.getSingleInstance().setmThresholdMin(
 					new Double(etThresMin.getText().toString()));
 
 			// etThresMax = (EditText) findViewById(R.id.etMaxThreshold);
-			FeedbackCubeConfig.getSingleInstance().setmThresholdMax(
+			ConfigManager.getSingleInstance().setmThresholdMax(
 					new Double(etThresMax.getText().toString()));
 		} catch (Exception e) {
 			updateCurrentNoiseAndProgressbar("Threshold have invalid values", 0.0);
@@ -236,7 +235,7 @@ public class NoiseAlertActivity extends Activity {
 			}
 			// Noise monitoring start
 			// Runnable(mPollTask) will execute after POLL_INTERVAL
-			mHandler.postDelayed(mPollTask, FeedbackCubeConfig.POLL_INTERVAL);
+			mHandler.postDelayed(mPollTask, ConfigManager.POLL_INTERVAL);
 		} catch (Exception e) {
 			updateCurrentNoiseAndProgressbar("Error starting activity", 0.0);
 			e.printStackTrace();
@@ -272,7 +271,7 @@ public class NoiseAlertActivity extends Activity {
 	}
 
 	private void updateAvgTextAndBackground(double signalAVG, double signal,
-			FeedbackColor co) {
+			Color co) {
 
 		// stop();
 
@@ -287,7 +286,7 @@ public class NoiseAlertActivity extends Activity {
 				+ "] RGB \n[" + String.valueOf(signal) + "] dB \n["
 				+ String.valueOf(signalAVG) + "] dbAVG");
 
-		llTecla.setBackgroundColor(Color.rgb(co.getR(), co.getG(), co.getB()));
+		llTecla.setBackgroundColor(android.graphics.Color.rgb(co.getR(), co.getG(), co.getB()));
 		
 		
 		ivFruit.setImageResource(getNoiseBadge(signalAVG));
@@ -345,8 +344,8 @@ public class NoiseAlertActivity extends Activity {
 			
 			// Boot cube on
 			Log.i("FC", "Starting feedback cube ..."+sIp);			
-			FCOn f = new FCOn(sIp);
-			new FeedbackCubeManager().execute(f);
+			OnCommand f = new OnCommand(sIp);
+			new RequestManagerAsyncTask().execute(f);
 
 			
 			
@@ -355,8 +354,8 @@ public class NoiseAlertActivity extends Activity {
 			
 			// Switch cube off
 			Log.i("FC", "Stoping feedback cube ..."+sIp);			
-			FCOff f = new FCOff(sIp);
-			new FeedbackCubeManager().execute(f);
+			OffCommand f = new OffCommand(sIp);
+			new RequestManagerAsyncTask().execute(f);
 
 			
 		}

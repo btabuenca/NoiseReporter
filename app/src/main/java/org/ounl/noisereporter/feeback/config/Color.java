@@ -1,13 +1,13 @@
-package org.ounl.noisereporter.feeback;
+package org.ounl.noisereporter.feeback.config;
 
-public class FeedbackColor {
+public class Color {
 	
 	private int R;
 	private int G;
 	private int B;
 	
 	
-	public FeedbackColor(int r, int g, int b) {
+	public Color(int r, int g, int b) {
 		super();
 		R = r;
 		G = g;

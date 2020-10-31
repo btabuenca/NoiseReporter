@@ -16,28 +16,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.fcube.commands;
+package org.ounl.noisereporter.feeback.commands;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.ounl.noisereporter.fcube.config.FeedbackCubeConfig;
+import org.ounl.noisereporter.feeback.config.ConfigManager;
 
-public class FCOn implements IFeedbackCubeCommnads{
+public class OffCommand implements ICommands {
 	/**
-	 * > PUT /ring/on/ HTTP/1.1 : Turns the LED strip on
+	 * > PUT /ring/on/ HTTP/1.1 : Turns the LED strip off
 	 */
-	private static final String WS_PATH = "/ring/on/";
+	private static final String WS_PATH = "/ring/off/";
 	private String ipAdress = "";
 	
 	
-	public FCOn(String sIp){
+	public OffCommand(String sIp){
 		ipAdress = sIp;
 	}
 	
 	private String getCommand(){		
 		
-		return FeedbackCubeConfig.URL_PREFIX + ipAdress + WS_PATH; 
+		return ConfigManager.URL_PREFIX + ipAdress + WS_PATH;
 	}
 	
 
@@ -52,9 +52,10 @@ public class FCOn implements IFeedbackCubeCommnads{
 	
 	@Override
 	public String toString(){
-		return "COMMAND ON: URL["+getUrlCommand().toString()+"] COMMAND["+getCommand()+"] HAS PARAMS:["+hasParams()+"] PARAMS:["+getParams()+"] METHOD:["+getHttpMethod()+"]";
+		return "COMMAND OFF: URL["+getUrlCommand().toString()+"] COMMAND["+getCommand()+"] HAS PARAMS:["+hasParams()+"] PARAMS:["+getParams()+"] METHOD:["+getHttpMethod()+"]";
 	}
-
+	
+	
 	@Override
 	public boolean hasParams() {
 		return false;
@@ -68,7 +69,7 @@ public class FCOn implements IFeedbackCubeCommnads{
 	
 	@Override
 	public String getHttpMethod() {		
-		return IFeedbackCubeCommnads.HTTP_METHOD_PUT;
+		return ICommands.HTTP_METHOD_PUT;
 	}
 
 	@Override
