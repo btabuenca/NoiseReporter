@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.feeback.config;
+package org.ounl.noisereporter.prisma.config;
 
-import org.ounl.noisereporter.NoiseUtils;
+import org.ounl.noisereporter.sensors.NoiseUtils;
 
 
 public class ConfigManager {

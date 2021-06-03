@@ -53,9 +53,6 @@ public class ListViewSubjectsAdapter extends BaseAdapter {
         this.activity = activity;
         this.list = list;
 
-        //TIENES QUE PASAR A POJO LA MVIDA Y BORRAR TODO LO QUE HAY DE ACTIVITIES
-
-
         Log.d(CLASSNAME, "Creating list adapter with " + getCount() + " items  ");
     }
 

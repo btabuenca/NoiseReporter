@@ -1,4 +1,4 @@
-package org.ounl.noisereporter.feeback.config;
+package org.ounl.noisereporter.prisma.config;
 
 
 public class ColorFactory {

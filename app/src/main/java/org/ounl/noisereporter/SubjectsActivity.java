@@ -41,8 +41,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
+import androidx.core.app.NavUtils;
+import androidx.core.app.TaskStackBuilder;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -194,7 +194,6 @@ public class SubjectsActivity extends Activity {
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 
         //db.getSalat(sTag, dMin, dStep)
-
 
         final int nr = 10;
         Random r = new Random();

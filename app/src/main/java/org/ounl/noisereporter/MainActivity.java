@@ -6,18 +6,22 @@ import java.util.Date;
 import org.ounl.noisereporter.database.DatabaseHandler;
 import org.ounl.noisereporter.database.tables.NoiseSampleTable;
 import org.ounl.noisereporter.database.tables.TagTable;
-import org.ounl.noisereporter.feeback.commands.ColorCommand;
-import org.ounl.noisereporter.feeback.commands.OffCommand;
-import org.ounl.noisereporter.feeback.commands.OnCommand;
-import org.ounl.noisereporter.feeback.config.ConfigManager;
-import org.ounl.noisereporter.feeback.config.Constants;
-import org.ounl.noisereporter.feeback.RequestManagerAsyncTask;
-import org.ounl.noisereporter.feeback.config.Color;
+import org.ounl.noisereporter.prisma.commands.ColorCommand;
+import org.ounl.noisereporter.prisma.commands.OffCommand;
+import org.ounl.noisereporter.prisma.commands.OnCommand;
+import org.ounl.noisereporter.prisma.config.ConfigManager;
+import org.ounl.noisereporter.prisma.config.Constants;
+import org.ounl.noisereporter.prisma.RequestManagerAsyncTask;
+import org.ounl.noisereporter.prisma.config.Color;
+import org.ounl.noisereporter.sensors.NoiseSensor;
+import org.ounl.noisereporter.sensors.NoiseUtils;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -31,27 +35,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class MainActivity extends Activity {
-    /* constants */
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-    /**
-     * running state
-     **/
+public class MainActivity extends Activity {
+
     private boolean mRunning = false;
 
-    /**
-     * config state
-     **/
     private PowerManager.WakeLock mWakeLock;
     private Handler mHandler = new Handler();
+
     private DatabaseHandler db;
+
     private NoiseUtils nu = new NoiseUtils();
-
-    /* References to view elements */
-    private TextView mStatusView, tv_noice;
-
-    /* sound data source */
     private NoiseSensor mSensor;
+
+
+    private TextView mStatusView, tv_noice;
     ProgressBar bar;
     EditText etIP;
     EditText etTAG;
@@ -62,136 +62,33 @@ public class MainActivity extends Activity {
     ToggleButton mToggleButton;
 
 
-    private Runnable mSleepTask = new Runnable() {
-        public void run() {
-            // Log.i("Noise", "runnable mSleepTask");
-
-            // save one record in tags as new session
-            String sTag = etTAG.getText().toString();
-            Double dThresMin = new Double(etThresMin.getText().toString());
-            Double dThresMax = new Double(etThresMax.getText().toString());
-            db.addTag(new TagTable(sTag, dThresMin, dThresMax));
-
-            // Start recording samples of noise
-            start();
-        }
-    };
-
-    // Create runnable thread to Monitor Voice
-    private Runnable mPollTask = new Runnable() {
-        public void run() {
-
-            try {
-                // Read input data
-                String sIp = etIP.getText().toString();
-                ConfigManager.getSingleInstance().setIp(sIp);
-
-                String sTag = etTAG.getText().toString();
-
-
-                // Current value returned by the sensor
-                double amp = mSensor.getAmplitude();
-
-                if (!Double.isInfinite(amp)) {
-
-                    // Average value for the last NUM_POLLS meaures
-                    double ampAVG = 0;
-                    // Log.i("Noise", "runnable mPollTask");
-
-
-                    Date dNow = new Date();
-                    int iLevel = Constants.NOISE_LEVEL_INIT;
-
-                    // Add noise item to buffer and return position where it was
-                    // inserted
-                    int iNum = ConfigManager.getSingleInstance()
-                            .addNoiseItem(amp);
-
-                    // Return color for average values in buffer
-                    // Commented for calibration
-                    readThreshold();
-                    Color color = ConfigManager.getSingleInstance().getBufferColor();
-
-                    // Send color whenever the cube is activated
-                    if (mToggleButton.isChecked()) {
-                        // Launch color in the cube
-                        ColorCommand fcc = new ColorCommand(ConfigManager
-                                .getSingleInstance().getIp(), "" + color.getR(), ""
-                                + color.getG(), "" + color.getB());
-                        new RequestManagerAsyncTask().execute(fcc);
-                    }
-                    // Prepare log
-                    ampAVG = ConfigManager.getSingleInstance().getAverageNoise();
-
-                    // Show average color in mobile display
-                    updateCurrentNoiseAndProgressbar("Monitoring on..." + sIp, amp);
-                    updateAvgTextAndBackground(ampAVG, amp, color);
-
-                    // Get thresholds
-                    Double dThresMin = new Double(etThresMin.getText().toString());
-                    Double dThresMax = new Double(etThresMax.getText().toString());
-
-                    // Insert noise item into database
-                    db.addNoiseSample(new NoiseSampleTable(dNow.getTime(), amp, ampAVG, dThresMin, dThresMax, sTag));
-
-                    // new Double(etThresMin.getText().toString())
-
-                    // Added for callibration
-                    // FeedbackCubeColor color = new FeedbackCubeColor(0,0,0);
-                    // callForHelp(ampAVG, amp, color);
-
-                    if (iNum == ConfigManager.NUM_POLLS) {
-
-                        ConfigManager.getSingleInstance().resetPollIndex();
-                    }
-
-                }
-
-                // Runnable(mPollTask) will again execute after POLL_INTERVAL
-                mHandler.postDelayed(mPollTask,
-                        ConfigManager.POLL_INTERVAL);
-
-            } catch (Exception e) {
-                updateCurrentNoiseAndProgressbar("" + e.getMessage(), 0.0);
-                e.printStackTrace();
-            }
-        }
-    };
-
-    /**
-     * Called when the activity is first created.
-     */
     @SuppressLint("InvalidWakeLockTag")
-	@Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Defined SoundLevelView in activity_main.xml file
         setContentView(R.layout.activity_main);
 
-        mToggleButton = (ToggleButton) findViewById(R.id.tbFeedback);
-        mStatusView = (TextView) findViewById(R.id.status);
-        tv_noice = (TextView) findViewById(R.id.tv_noice);
-        bar = (ProgressBar) findViewById(R.id.progressBar1);
-
-        etIP = (EditText) findViewById(R.id.editTextIP);
-        etTAG = (EditText) findViewById(R.id.editTextTAG);
+        mToggleButton = findViewById(R.id.tbFeedback);
+        mStatusView = findViewById(R.id.status);
+        tv_noice = findViewById(R.id.tv_noice);
+        bar = findViewById(R.id.progressBar1);
+        etIP = findViewById(R.id.editTextIP);
+        etTAG = findViewById(R.id.editTextTAG);
         etTAG.setText(Calendar.getInstance().get(Calendar.YEAR) + "_"
                 + (Calendar.getInstance().get(Calendar.MONTH) + 1) + "_"
                 + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + "_"
                 + Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+        llTecla = findViewById(R.id.llTeclas);
+        etThresMin = findViewById(R.id.etMimThreshold);
+        etThresMax = findViewById(R.id.etMaxThreshold);
+        ivFruit = findViewById(R.id.imageViewFruit);
 
-        llTecla = (LinearLayout) findViewById(R.id.llTeclas);
-        etThresMin = (EditText) findViewById(R.id.etMimThreshold);
-        etThresMax = (EditText) findViewById(R.id.etMaxThreshold);
-        ivFruit = (ImageView) findViewById(R.id.imageViewFruit);
-        readThreshold();
-
-        // Used to record voice
+        readThreshold(); // Get min and max thresholds
         mSensor = new NoiseSensor();
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        //mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MainActivity"); // btb commented for deprecate
-		mWakeLock = pm.newWakeLock(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, "MainActivity");
+        //mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MainActivity"); // btb commented for deprecated
+        mWakeLock = pm.newWakeLock(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, "MainActivity");
 
         db = new DatabaseHandler(getApplicationContext());
 
@@ -199,12 +96,10 @@ public class MainActivity extends Activity {
     }
 
     private void readThreshold() {
-        // Configure thresholds
         try {
             ConfigManager.getSingleInstance().setmThresholdMin(
                     new Double(etThresMin.getText().toString()));
 
-            // etThresMax = (EditText) findViewById(R.id.etMaxThreshold);
             ConfigManager.getSingleInstance().setmThresholdMax(
                     new Double(etThresMax.getText().toString()));
         } catch (Exception e) {
@@ -224,14 +119,15 @@ public class MainActivity extends Activity {
         super.onStop();
         // Log.i("Noise", "==== onStop ===");
         // Stop noise monitoring
-        stop();
+        stopMonitoring();
     }
 
-    private void start() {
+    private void startMonitoring() {
         try {
             Log.i("Noise", "==== Start Noise Monitoring===");
-
+            isRecordingPermissionGranted();
             mSensor.start();
+
             if (!mWakeLock.isHeld()) {
                 mWakeLock.acquire();
             }
@@ -244,10 +140,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void stop() {
+    private void stopMonitoring() {
         try {
-
-
             Log.i("Noise", "==== Stop Noise Monitoring===");
             if (mWakeLock.isHeld()) {
                 mWakeLock.release();
@@ -296,10 +190,10 @@ public class MainActivity extends Activity {
      *
      * @param v
      */
-    public void onOn(View v) {
+    public void onOnButton(View v) {
         // make button visible
         ivFruit.setVisibility(View.VISIBLE);
-        start();
+        startMonitoring();
     }
 
     /**
@@ -307,14 +201,14 @@ public class MainActivity extends Activity {
      *
      * @param v
      */
-    public void onOff(View v) {
-        stop();
-        //make fruit invisible
+    public void onOffButton(View v) {
+        stopMonitoring();
+        // make fruit invisible
         ivFruit.setVisibility(View.INVISIBLE);
     }
 
 
-    public void onToggle(View v) {
+    public void onToggleButton(View v) {
 
         ToggleButton tb = (ToggleButton) v;
 
@@ -336,8 +230,6 @@ public class MainActivity extends Activity {
             Log.i("FC", "Stoping feedback cube ..." + sIp);
             OffCommand f = new OffCommand(sIp);
             new RequestManagerAsyncTask().execute(f);
-
-
         }
 
     }
@@ -349,11 +241,8 @@ public class MainActivity extends Activity {
      * @param v
      */
     public void onChart(View v) {
-
         Intent intent = new Intent(this, SubjectsActivity.class);
         startActivity(intent);
-
-
     }
 
 
@@ -365,25 +254,116 @@ public class MainActivity extends Activity {
      * @return
      */
     private int getNoiseBadge(double dNoise) {
-        // Configure thresholds
-
         try {
-
-
             Double dMinThres = new Double(etThresMin.getText().toString());
             Double dMaxThres = new Double(etThresMax.getText().toString());
-
             double dDiff = dMaxThres - dMinThres;
-
-
             return NoiseUtils.getFruitImage(dNoise, dMinThres, dMaxThres);
-
 
         } catch (Exception e) {
             return R.drawable.levelunknown_175x;
         }
 
     }
+
+
+    public void isRecordingPermissionGranted() {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]
+                    {Manifest.permission.RECORD_AUDIO}, 0);
+
+        }
+    }
+
+    // Runnable thread to start monitoring
+    private Runnable mSleepTask = new Runnable() {
+        public void run() {
+            // save one record in tags as new session
+            String sTag = etTAG.getText().toString();
+            Double dThresMin = new Double(etThresMin.getText().toString());
+            Double dThresMax = new Double(etThresMax.getText().toString());
+            db.addTag(new TagTable(sTag, dThresMin, dThresMax));
+
+            // Start recording samples of noise
+            startMonitoring();
+        }
+    };
+
+    // Runnable thread to poll sampled data
+    private Runnable mPollTask = new Runnable() {
+        public void run() {
+
+            try {
+                // Read input data
+                String sIp = etIP.getText().toString();
+                ConfigManager.getSingleInstance().setIp(sIp);
+                String sTag = etTAG.getText().toString();
+
+
+                // Current value returned by the sensor
+                double amp = mSensor.getAmplitude();
+
+                // Bernardoooo aaqui es donde se lle el valor a meter en firbase y en thingsboard
+
+                if (!Double.isInfinite(amp)) {
+
+                    // Average value for the last NUM_POLLS meaures
+                    double ampAVG = 0;
+                    Date dNow = new Date();
+                    int iLevel = Constants.NOISE_LEVEL_INIT;
+
+                    // Add noise item to buffer and return position where it was
+                    // inserted
+                    int iNum = ConfigManager.getSingleInstance()
+                            .addNoiseItem(amp);
+
+                    // Return color for average values in buffer
+                    // Commented for calibration
+                    readThreshold();
+                    Color color = ConfigManager.getSingleInstance().getBufferColor();
+
+                    // Send color whenever the cube is activated
+                    if (mToggleButton.isChecked()) {
+                        // Launch color in the cube
+                        ColorCommand fcc = new ColorCommand(ConfigManager
+                                .getSingleInstance().getIp(), "" + color.getR(), ""
+                                + color.getG(), "" + color.getB());
+                        new RequestManagerAsyncTask().execute(fcc);
+                    }
+
+
+                    // Prepare log
+                    ampAVG = ConfigManager.getSingleInstance().getAverageNoise();
+
+                    // Show average color in mobile display
+                    updateCurrentNoiseAndProgressbar("Monitoring on..." + sIp, amp);
+                    updateAvgTextAndBackground(ampAVG, amp, color);
+
+                    // Get thresholds
+                    Double dThresMin = new Double(etThresMin.getText().toString());
+                    Double dThresMax = new Double(etThresMax.getText().toString());
+
+                    // Insert noise item into database
+                    db.addNoiseSample(new NoiseSampleTable(dNow.getTime(), amp, ampAVG, dThresMin, dThresMax, sTag));
+
+                    if (iNum == ConfigManager.NUM_POLLS) {
+
+                        ConfigManager.getSingleInstance().resetPollIndex();
+                    }
+
+                }
+
+                // Runnable(mPollTask) will again execute after POLL_INTERVAL
+                mHandler.postDelayed(mPollTask,
+                        ConfigManager.POLL_INTERVAL);
+
+            } catch (Exception e) {
+                updateCurrentNoiseAndProgressbar("" + e.getMessage(), 0.0);
+                e.printStackTrace();
+            }
+        }
+    };
 
 
 };

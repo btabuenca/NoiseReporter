@@ -16,30 +16,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.feeback.commands;
+package org.ounl.noisereporter.prisma.commands;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.ounl.noisereporter.feeback.config.ConfigManager;
+import org.ounl.noisereporter.prisma.config.ConfigManager;
 
-public class ColorCommand implements ICommands {
+public class OffCommand implements ICommands {
 	/**
-	 * * > PUT /ring/color/ HTTP/1.1           : Changes the color of the LED strip
+	 * > PUT /ring/on/ HTTP/1.1 : Turns the LED strip off
 	 */
-	private static final String WS_PATH = "/ring/color/";
+	private static final String WS_PATH = "/ring/off/";
 	private String ipAdress = "";
-	private String sColorRed_DECIMAL = "0";
-	private String sColorGreen_DECIMAL = "0";
-	private String sColorBlue_DECIMAL = "0";
 	
 	
-	public ColorCommand(String sIp, String sRedDecimal, String sGreenDecimal, String sBlueDecimal){
+	public OffCommand(String sIp){
 		ipAdress = sIp;
-		
-		sColorRed_DECIMAL = sRedDecimal;
-		sColorGreen_DECIMAL = sGreenDecimal;
-		sColorBlue_DECIMAL = sBlueDecimal;
 	}
 	
 	private String getCommand(){		
@@ -47,7 +40,7 @@ public class ColorCommand implements ICommands {
 		return ConfigManager.URL_PREFIX + ipAdress + WS_PATH;
 	}
 	
-	
+
 	public URL getUrlCommand(){
 		try {
 			return new URL(getCommand());
@@ -56,39 +49,32 @@ public class ColorCommand implements ICommands {
 		}
 		return null;
 	}
-
 	
 	@Override
 	public String toString(){
-		return "COMMAND ON: URL["+getUrlCommand().toString()+"] COMMAND["+getCommand()+"] HAS PARAMS:["+hasParams()+"] PARAMS:["+getParams()+"] METHOD:["+getHttpMethod()+"]";
+		return "COMMAND OFF: URL["+getUrlCommand().toString()+"] COMMAND["+getCommand()+"] HAS PARAMS:["+hasParams()+"] PARAMS:["+getParams()+"] METHOD:["+getHttpMethod()+"]";
 	}
 	
-
+	
 	@Override
 	public boolean hasParams() {
-		return true;
+		return false;
 	}
 
 	
 	@Override
 	public String getParams() {
-		
-		String sJson = "{\"r\":" + sColorRed_DECIMAL +
-				",\"g\":" + sColorGreen_DECIMAL + 
-				",\"b\":" + sColorBlue_DECIMAL + 
-				"}";
-				
-		return sJson;
+		return "";
 	}
-
+	
 	@Override
 	public String getHttpMethod() {		
 		return ICommands.HTTP_METHOD_PUT;
 	}
-	
+
 	@Override
 	public String getAction() {
-		return ACTION_COLOR;
+		return ACTION_OFF;
 	}	
 	
 	@Override

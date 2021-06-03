@@ -1,4 +1,4 @@
-package org.ounl.noisereporter;
+package org.ounl.noisereporter.sensors;
 
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class NoiseSensor {
         private double mEMA = 0.0;
 
         public void start() {
-               
+
         	if (mRecorder == null) {
                 	
                         mRecorder = new MediaRecorder();

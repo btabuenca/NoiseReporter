@@ -21,7 +21,7 @@ package org.ounl.noisereporter.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ounl.noisereporter.feeback.config.Constants;
+import org.ounl.noisereporter.prisma.config.Constants;
 import org.ounl.noisereporter.database.tables.MinStepDO;
 import org.ounl.noisereporter.database.tables.NoiseSampleTable;
 import org.ounl.noisereporter.database.tables.NoiseSampleDO;

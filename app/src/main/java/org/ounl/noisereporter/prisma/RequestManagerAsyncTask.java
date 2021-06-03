@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.feeback;
+package org.ounl.noisereporter.prisma;
 
 import java.io.EOFException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import org.ounl.noisereporter.feeback.commands.ICommands;
+import org.ounl.noisereporter.prisma.commands.ICommands;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -92,12 +92,8 @@ public class RequestManagerAsyncTask extends AsyncTask<ICommands, Void, String> 
 	        	connection.disconnect();
 	        }
 	    }
-		
 
 	}
-	
-	
-	
 
 	@Override
 	protected void onPostExecute(String result) {

@@ -16,12 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter;
+package org.ounl.noisereporter.sensors;
 
 import java.util.concurrent.TimeUnit;
-import org.ounl.noisereporter.feeback.config.Color;
-import org.ounl.noisereporter.feeback.config.ColorFactory;
-import org.ounl.noisereporter.feeback.config.Constants;
+
+import org.ounl.noisereporter.R;
+import org.ounl.noisereporter.prisma.config.Color;
+import org.ounl.noisereporter.prisma.config.ColorFactory;
+import org.ounl.noisereporter.prisma.config.Constants;
 
 
 public class NoiseUtils {

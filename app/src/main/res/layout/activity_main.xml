@@ -12,53 +12,43 @@
         <LinearLayout
             android:id="@+id/llTeclas"
             android:layout_width="fill_parent"
-            android:layout_height="600dp"
-            android:background="#5091FA" >
+            android:layout_height="354dp"
+            android:background="#5091FA">
 
-<!--             
-            <ImageView
-                android:id="@+id/imageViewPower"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="onPower"
-                android:src="@drawable/on100x" />
- -->          
 
             <ImageView
                 android:id="@+id/imageViewOn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="53dp"
+                android:layout_height="69dp"
                 android:layout_weight="1"
-                android:onClick="onOn"
+                android:onClick="onOnButton"
                 android:src="@drawable/unmute" />
 
             <ImageView
                 android:id="@+id/imageViewOff"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="69dp"
                 android:layout_weight="1"
-                android:onClick="onOff"
+                android:onClick="onOffButton"
                 android:src="@drawable/mute" />
-            
+
             <ImageView
                 android:id="@+id/imageViewCharts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="94dp"
+                android:layout_height="69dp"
                 android:layout_weight="1"
                 android:onClick="onChart"
-                android:src="@drawable/charts100x" />            
-            
-			<ImageView
+                android:src="@drawable/charts100x" />
+
+            <ImageView
                 android:id="@+id/imageViewFruit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="52dp"
+                android:layout_height="69dp"
                 android:layout_weight="1"
-                android:visibility="invisible"
-                android:src="@drawable/noise_175x" />            
-            
-       
-                        
+                android:src="@drawable/noise_175x"
+                android:visibility="invisible" />
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -139,7 +129,7 @@
                 android:layout_weight="1"
                 android:text="Buffer (num. samples):"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-            
+
             <EditText
                 android:id="@+id/etBuffer"
                 android:layout_width="wrap_content"
@@ -154,7 +144,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
-            
+
             <TextView
                 android:id="@+id/tvFeedback"
                 android:layout_width="wrap_content"
@@ -169,7 +159,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="192.168.0.17"/>
-            
+
              <ToggleButton
                 android:id="@+id/tbFeedback"
                 android:layout_width="wrap_content"
@@ -178,9 +168,9 @@
                 android:layout_gravity="fill_vertical"
                 android:gravity="fill_vertical"
                 android:checked="false"
-                android:onClick="onToggle"
+                android:onClick="onToggleButton"
                 android:textColor="#acdced" />
-                         
+
         </LinearLayout>
 
         <LinearLayout
@@ -202,7 +192,7 @@
                 android:layout_weight="1"
                 android:text="TAG" />
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
@@ -222,13 +212,13 @@
                 android:layout_weight="1"
                 android:text="Sony Xperia S 2011" />
         </LinearLayout>
-        
+
 
         <TextView
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            
+
             android:text="@string/stopped"
             android:textSize="25sp"
             android:textStyle="bold" />
@@ -246,32 +236,8 @@
             android:layout_height="wrap_content"
             android:text=""
             android:textAppearance="?android:attr/textAppearanceLarge" />
-        
-<!--         
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
 
-            <ImageView
-                android:id="@+id/imageViewCharts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="onChart"
-                android:src="@drawable/charts100x" />
-            
-            <ImageView
-                android:id="@+id/imageViewShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="onShare"
-                android:src="@drawable/share100x" />     
 
-        </LinearLayout>
- -->        
-        
-        
     </LinearLayout>
 
 </ScrollView>

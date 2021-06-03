@@ -16,23 +16,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter.feeback.commands;
+package org.ounl.noisereporter.prisma.commands;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.ounl.noisereporter.feeback.config.ConfigManager;
+import org.ounl.noisereporter.prisma.config.ConfigManager;
 
-public class OnCommand implements ICommands {
+public class ColorCommand implements ICommands {
 	/**
-	 * > PUT /ring/on/ HTTP/1.1 : Turns the LED strip on
+	 * * > PUT /ring/color/ HTTP/1.1           : Changes the color of the LED strip
 	 */
-	private static final String WS_PATH = "/ring/on/";
+	private static final String WS_PATH = "/ring/color/";
 	private String ipAdress = "";
+	private String sColorRed_DECIMAL = "0";
+	private String sColorGreen_DECIMAL = "0";
+	private String sColorBlue_DECIMAL = "0";
 	
 	
-	public OnCommand(String sIp){
+	public ColorCommand(String sIp, String sRedDecimal, String sGreenDecimal, String sBlueDecimal){
 		ipAdress = sIp;
+		
+		sColorRed_DECIMAL = sRedDecimal;
+		sColorGreen_DECIMAL = sGreenDecimal;
+		sColorBlue_DECIMAL = sBlueDecimal;
 	}
 	
 	private String getCommand(){		
@@ -40,7 +47,7 @@ public class OnCommand implements ICommands {
 		return ConfigManager.URL_PREFIX + ipAdress + WS_PATH;
 	}
 	
-
+	
 	public URL getUrlCommand(){
 		try {
 			return new URL(getCommand());
@@ -49,31 +56,39 @@ public class OnCommand implements ICommands {
 		}
 		return null;
 	}
+
 	
 	@Override
 	public String toString(){
 		return "COMMAND ON: URL["+getUrlCommand().toString()+"] COMMAND["+getCommand()+"] HAS PARAMS:["+hasParams()+"] PARAMS:["+getParams()+"] METHOD:["+getHttpMethod()+"]";
 	}
+	
 
 	@Override
 	public boolean hasParams() {
-		return false;
+		return true;
 	}
 
 	
 	@Override
 	public String getParams() {
-		return "";
+		
+		String sJson = "{\"r\":" + sColorRed_DECIMAL +
+				",\"g\":" + sColorGreen_DECIMAL + 
+				",\"b\":" + sColorBlue_DECIMAL + 
+				"}";
+				
+		return sJson;
 	}
-	
+
 	@Override
 	public String getHttpMethod() {		
 		return ICommands.HTTP_METHOD_PUT;
 	}
-
+	
 	@Override
 	public String getAction() {
-		return ACTION_OFF;
+		return ACTION_COLOR;
 	}	
 	
 	@Override
