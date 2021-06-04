@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter;
+package org.ounl.noisereporter.database;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +32,7 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
-import org.ounl.noisereporter.database.DatabaseHandler;
-import org.ounl.noisereporter.database.ListViewSubjectsAdapter;
+import org.ounl.noisereporter.R;
 import org.ounl.noisereporter.database.tables.NoiseSampleDO;
 
 import android.app.ActionBar;

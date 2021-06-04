@@ -1,9 +1,10 @@
 package org.ounl.noisereporter;
-
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.JSONObject;
 import org.ounl.noisereporter.database.DatabaseHandler;
+import org.ounl.noisereporter.database.SubjectsActivity;
 import org.ounl.noisereporter.database.tables.NoiseSampleTable;
 import org.ounl.noisereporter.database.tables.TagTable;
 import org.ounl.noisereporter.prisma.commands.ColorCommand;
@@ -15,6 +16,7 @@ import org.ounl.noisereporter.prisma.RequestManagerAsyncTask;
 import org.ounl.noisereporter.prisma.config.Color;
 import org.ounl.noisereporter.sensors.NoiseSensor;
 import org.ounl.noisereporter.sensors.NoiseUtils;
+import org.ounl.noisereporter.thingsboard.RequestManagerThingsboardAsyncTask;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -39,6 +41,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends Activity {
+
+    private String DEBUG_TAG = "btb";
 
     private boolean mRunning = false;
 
@@ -91,7 +95,6 @@ public class MainActivity extends Activity {
         mWakeLock = pm.newWakeLock(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, "MainActivity");
 
         db = new DatabaseHandler(getApplicationContext());
-
 
     }
 
@@ -165,8 +168,7 @@ public class MainActivity extends Activity {
 
     }
 
-    private void updateAvgTextAndBackground(double signalAVG, double signal,
-                                            Color co) {
+    private void updateAvgTextAndBackground(double signalAVG, double signal, Color co) {
 
 
         // Show alert when noise thersold crossed
@@ -179,8 +181,6 @@ public class MainActivity extends Activity {
                 + String.valueOf(signalAVG) + "] dbAVG");
 
         llTecla.setBackgroundColor(android.graphics.Color.rgb(co.getR(), co.getG(), co.getB()));
-
-
         ivFruit.setImageResource(getNoiseBadge(signalAVG));
     }
 
@@ -300,17 +300,15 @@ public class MainActivity extends Activity {
                 ConfigManager.getSingleInstance().setIp(sIp);
                 String sTag = etTAG.getText().toString();
 
+                Date dNow = new Date();
 
                 // Current value returned by the sensor
                 double amp = mSensor.getAmplitude();
-
-                // Bernardoooo aaqui es donde se lle el valor a meter en firbase y en thingsboard
 
                 if (!Double.isInfinite(amp)) {
 
                     // Average value for the last NUM_POLLS meaures
                     double ampAVG = 0;
-                    Date dNow = new Date();
                     int iLevel = Constants.NOISE_LEVEL_INIT;
 
                     // Add noise item to buffer and return position where it was
@@ -330,14 +328,16 @@ public class MainActivity extends Activity {
                                 .getSingleInstance().getIp(), "" + color.getR(), ""
                                 + color.getG(), "" + color.getB());
                         new RequestManagerAsyncTask().execute(fcc);
+
+                        updateCurrentNoiseAndProgressbar("Monitoring on..." + sIp, amp);
                     }
+
 
 
                     // Prepare log
                     ampAVG = ConfigManager.getSingleInstance().getAverageNoise();
 
                     // Show average color in mobile display
-                    updateCurrentNoiseAndProgressbar("Monitoring on..." + sIp, amp);
                     updateAvgTextAndBackground(ampAVG, amp, color);
 
                     // Get thresholds
@@ -346,9 +346,21 @@ public class MainActivity extends Activity {
 
                     // Insert noise item into database
                     db.addNoiseSample(new NoiseSampleTable(dNow.getTime(), amp, ampAVG, dThresMin, dThresMax, sTag));
+                    Log.i(DEBUG_TAG, "timestamp["+dNow.getTime()+"] amplitude["+mSensor.getAmplitude()+"] amplitudeEMA["+mSensor.getAmplitudeEMA()+"] amplitudeAVG["+ampAVG+"]");
+
+                    // Push thingsboard always
+                    JSONObject jsonObject = new JSONObject();
+                    //jsonObject.put("amplitude", mSensor.getAmplitude());
+                    jsonObject.put("amplitudeAVG", ampAVG);
+
+
+                    new RequestManagerThingsboardAsyncTask().execute(jsonObject);
+
+
+
+
 
                     if (iNum == ConfigManager.NUM_POLLS) {
-
                         ConfigManager.getSingleInstance().resetPollIndex();
                     }
 

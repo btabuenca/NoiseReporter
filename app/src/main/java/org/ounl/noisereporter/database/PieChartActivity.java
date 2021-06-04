@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.ounl.noisereporter;
+package org.ounl.noisereporter.database;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ import org.achartengine.model.CategorySeries;
 import org.achartengine.model.SeriesSelection;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
-import org.ounl.noisereporter.database.DatabaseHandler;
+import org.ounl.noisereporter.R;
 import org.ounl.noisereporter.database.tables.MinStepDO;
 import org.ounl.noisereporter.database.tables.NoiseSaladDO;
 import org.ounl.noisereporter.prisma.config.Color;
