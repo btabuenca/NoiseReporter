@@ -33,16 +33,16 @@ public class RequestManagerThingsboardAsyncTask extends AsyncTask<JSONObject, Vo
 
         private void run(JSONObject jo) {
 
-            //HttpsURLConnection connection = null;
-            HttpURLConnection connection = null;
+            HttpsURLConnection connection = null;
+            //HttpURLConnection connection = null;
 
             try {
 
-                //URL url = new URL("https://thingsboard.cloud/api/v1/YOUR_TOKEN_HERE/telemetry")
-                //connection = (HttpsURLConnection) url.openConnection();
+                URL url = new URL("https://thingsboard.cloud/api/v1/nUw81FzSm8uAbzbok8xx/telemetry");
+                connection = (HttpsURLConnection) url.openConnection();
 
-                URL url = new URL("http://iot.etsisi.upm.es:8080/api/v1/YOUR_TOKEN_HERE/telemetry");
-                connection = (HttpURLConnection) url.openConnection();
+                //URL url = new URL("http://iot.etsisi.upm.es:8080/api/v1/jpDpp5e5MPkqnbRXj7CL/telemetry");
+                //connection = (HttpURLConnection) url.openConnection();
 
                 Log.i(CLASSNAME, "Lunch command on url "+url.toString());
                 connection.setRequestMethod("POST");
